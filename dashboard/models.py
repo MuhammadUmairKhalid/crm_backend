@@ -1,6 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from enum import Enum
+
+class FormStatus(Enum):
+    Pending = "Pending"
+    Validated = "Validated"
+
+    @classmethod
+    def choice(cls):
+        return [ (key.name,key.value) for key in cls]
 # Create your models here.
 
 class User(AbstractUser):
@@ -143,3 +152,14 @@ class PaymentStatus(models.Model):
         ('Declined', 'Declined')
     ])
 
+
+class Form(models.Model):
+    agent = models.ForeignKey(User,on_delete=models.CASCADE)
+    validator = models.ForeignKey(User,on_delete=models.CASCADE)
+    status = models.CharField(choices=FormStatus.choice(),default=FormStatus.Pending)
+    data = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.id} {self.status}"
