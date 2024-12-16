@@ -36,3 +36,4 @@ dist/
 .vscode/
 .idea/
 .PyCharm/
+*venv
