@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from rest_framework.authtoken.models import Token
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle
+from api.permissions import IsAgent
 from dashboard.models import User
 from rest_framework import status
 from django.contrib.auth.hashers import check_password
@@ -39,3 +41,15 @@ class Login(APIView):
             status=status.HTTP_200_OK
         )
     
+
+class AddFormData(APIView):
+    authentication_classes = [TokenAuthentication,] 
+    permission_classes = [IsAuthenticated,IsAgent]
+    throttle_classes = [AnonRateThrottle]
+
+    def post(self, request):
+        
+        return Response(
+            {"status": "success"},
+            status=status.HTTP_200_OK
+        )

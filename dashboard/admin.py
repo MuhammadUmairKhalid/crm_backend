@@ -1,27 +1,58 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django import forms
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from .models import User, Form, Company
 
 
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'role',)
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'role',)
+
 class CustomUserAdmin(BaseUserAdmin):
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
     list_display = ['username', 'email', 'role', 'is_active']
     list_filter = ['role']
     search_fields = ['username', 'email']
 
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('email',)}),
+        ('Permissions', {'fields': ('role', 'is_active',)}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'role', 'password1', 'password2'),
+        }),
+    )
+
     def has_view_permission(self, request, obj=None):
         if not request.user.is_authenticated:
             return False
+        if request.user.is_superuser:  # Check for superuser status
+            return True
         if request.user.is_custom_superuser():
             return True
-        if request.user.role == 'admin':
+        if request.user.role == 'admin':  # <--- Add this line
             return True
         return False
+
 
     def has_add_permission(self, request):
         if not request.user.is_authenticated:
             return False
+        if request.user.is_superuser: 
+            return True
         if request.user.is_custom_superuser():
             return True
         if request.user.role == 'admin':
@@ -31,6 +62,8 @@ class CustomUserAdmin(BaseUserAdmin):
     def has_change_permission(self, request, obj=None):
         if not request.user.is_authenticated:
             return False
+        if request.user.is_superuser: 
+            return True
         if request.user.is_custom_superuser():
             return True
         if request.user.role == 'admin':
@@ -40,6 +73,8 @@ class CustomUserAdmin(BaseUserAdmin):
     def has_delete_permission(self, request, obj=None):
         if not request.user.is_authenticated:
             return False
+        if request.user.is_superuser:  # Check for superuser status
+            return True
         if request.user.is_custom_superuser():
             return True
         if request.user.role == 'admin':
@@ -47,21 +82,27 @@ class CustomUserAdmin(BaseUserAdmin):
         return False
 
     def get_queryset(self, request):
+        print("role",request.user.role)
         if not request.user.is_authenticated:
             return self.model.objects.none()
         qs = super().get_queryset(request)
-        if request.user.is_custom_superuser():
-            return qs.filter(role='admin')  # Superusers can only see admin users
         if request.user.role == 'admin':
-            return qs.filter(role__in=['agent', 'validator', 'account'])  # Admins can see agents, validators, and accounts
+            return qs.filter(role__in=['agent', 'validator', 'account'])
+        elif request.user.is_superuser:
+            return qs.filter(role='admin')  # Superusers can only see admin users
+        elif request.user.role is None:
+            return qs.none()  # or return a specific queryset for users with no role
+        print("Access restricted")
         return qs.none()
+    
 
     def save_model(self, request, obj, form, change):
+
         if request.user.is_authenticated:
-            if request.user.is_custom_superuser() and not change:
+            if request.user.is_superuser and not change:
                 obj.role = 'admin'
                 obj.is_staff = True
-                obj.is_superadmin = True
+                obj.is_superuser = True
             elif request.user.role == 'admin' and not change:
                 if 'agent' in request.POST:
                     obj.role = 'agent'
@@ -69,11 +110,10 @@ class CustomUserAdmin(BaseUserAdmin):
                     obj.role = 'validator'
                 elif 'account' in request.POST:
                     obj.role = 'account'
-                obj.is_staff = False 
+                else:
+                    obj.role = 'admin'  # assign default role
+                obj.is_staff = True 
         super().save_model(request, obj, form, change)
-
-
-admin.site.register(User, CustomUserAdmin)
 
 class FormAdmin(admin.ModelAdmin):
     list_display = ['id', 'agent', 'validator', 'company', 'status', 'created_at', 'updated_at']
@@ -96,5 +136,5 @@ class FormAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(Form, FormAdmin)
