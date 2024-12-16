@@ -1,145 +1,167 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-# Create your models here.
+from enum import Enum
+class Gender(Enum):
+    MALE = 'male'
+    FEMALE = 'female'
+
+    @classmethod
+    def choices(cls):
+        return [(gender.value, gender.name.capitalize()) for gender in cls]
+
+class InsuranceCompany(Enum):
+    MUTUAL_OF_OMAHA = "Mutual of Omaha"
+    AFLAC = "Aflac"
+    COREBRIDGE_FINANCIAL = "Corebridge Financial"
+    SBLI = "SBLI"
+    ROYAL_NEIGHBORS_OF_AMERICA = "Royal Neighbors of America"
+    GTL = "GTL"
+
+    @classmethod
+    def choices(cls):
+        return [(company.name, company.value) for company in cls]
+    
+class InsuranceType(Enum):
+    LEVEL = "Level"
+    STANDARD = "Standard"
+    GRADED = "Graded"
+    MODIFIED = "Modified"
+    GUARANTEED_ISSUE = "Guaranteed Issue"
+
+    @classmethod
+    def choices(cls):
+        return [(type.name, type.value) for type in cls]
+
+class SmokerType(Enum):
+    Smoker = 'smoker'
+    Non_Smoker = 'non_smoker'
+
+    @classmethod
+    def choices(cls):
+        return [(smoker.value, smoker.name.capitalize()) for smoker in cls]
+    
+class AccountType(Enum):
+    CHECKING_ACCOUNT = "Checking Account"
+    SAVINGS_ACCOUNT = "Savings Account"
+    DIRECT_EXPRESS_CARD = "Direct Express Card"
+
+    @classmethod
+    def choices(cls):
+        return [(account.name, account.value) for account in cls]
+    
+
+class ScheduleOption(Enum):
+    FIRST_OF_MONTH = "1st of each month"
+    THIRD_OF_MONTH = "3rd of each month"
+    SECOND_WEDNESDAY = "2nd Wednesday of each month"
+    THIRD_WEDNESDAY = "3rd Wednesday of each month"
+    FOURTH_WEDNESDAY = "4th Wednesday of each month"
+
+    @classmethod
+    def choices(cls):
+        return [(schedule.name, schedule.value) for schedule in cls]
 
 class User(AbstractUser):
     ROLE_CHOICES = [
-        ('Agent', 'Agent'),
-        ('Validator', 'Validator'),
-        ('Admin', 'Admin'),
-        ('PaymentChecker', 'Payment Checker'),
-        ('Retentions', 'Retentions'),
-        ('hr','hr')
+        ('superuser', 'Super User'),
+        ('admin', 'Admin'),
+        ('agent', 'Agent'),
+        ('validator', 'Validator'),
+        ('account', 'Account'),
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    password=models.CharField(max_length=8)
 
-    def clean(self):
-        if len(self.password) < 8:
-            raise ValidationError("Password must be at least 8 characters long.")
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
+    def is_admin(self):
+        return self.role == 'admin'
+
+    def is_custom_superuser(self):
+        return self.role == 'superuser'
+
+class Company(models.Model):
+    name = models.CharField(max_length=255)
+    bonus_formula = models.TextField()
+
+class Form(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    agent = models.ForeignKey(
+        'User',
+        on_delete=models.CASCADE,
+        related_name='forms',
+        limit_choices_to={'role': 'agent'}
+    )
+    validator = models.ForeignKey(
+        'User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_forms',
+        limit_choices_to={'role': 'validator'}
+    )
+    company = models.ForeignKey(
+        'Company',
+        on_delete=models.CASCADE
+    )
+    future_draft_date = models.DateField()
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    rejection_reason = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    birth_state = models.CharField(max_length=26, null=True)
+    phone_number = models.CharField(max_length=11)
+    name = models.CharField(max_length=26)
+    gender = models.CharField(max_length=26, choices=Gender.choices, default=Gender.MALE.value)
+    address = models.CharField(max_length=26, null=True)
+    dob = models.DateField(null=True)
+    age = models.IntegerField(null=True)
+    height = models.CharField(max_length=26, null=True)
+    weight = models.CharField(max_length=26, null=True)
+    insurance_company = models.CharField(max_length=26, choices=InsuranceCompany.choices, default=InsuranceCompany.MUTUAL_OF_OMAHA.value, null=True)
+    type_of_coverage = models.CharField(max_length=26, choices=InsuranceType.choices, default=InsuranceType.MODIFIED.value, null=True)
+    coverage_amount = models.CharField(max_length=26, null=True)
+    monthly_premium = models.CharField(max_length=26, null=True)
+    social_security_number = models.CharField(max_length=26)
+    beneficary = models.CharField(max_length=26, null=True)
+    tobacco = models.CharField(max_length=26, choices=SmokerType.choices, default=SmokerType.Smoker.value, null=True)
+    health_condition = models.CharField(max_length=26, null=True)
+    medication = models.CharField(max_length=26, null=True)
+    doctors_name_and_address = models.CharField(max_length=26, null=True)
+    bank_name = models.CharField(max_length=26, null=True)
+    account_type = models.CharField(max_length=26, choices=AccountType.choices, default=AccountType.SAVINGS_ACCOUNT.value, null=True)
+    routing_number = models.CharField(max_length=26, null=True)
+    account_number = models.CharField(max_length=26, null=True)
+    initial_draft_date = models.DateField(null=True)
+    future_draft_date = models.CharField(max_length=26, choices=ScheduleOption.choices, default=ScheduleOption.FIRST_OF_MONTH.value, null=True)
+    email = models.CharField(max_length=26)
+    comments = models.CharField(max_length=26, null=True)
+    jornaya_lead_id = models.CharField(max_length=26, null=True)
+    closers_name = models.CharField(max_length=26, null=True)
 
     def __str__(self):
-        return self.role
+        return f"Form #{self.id} by {self.agent.username} for {self.company.name}"
 
-class PersonalInfo(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.IntegerField()
-    dob = models.DateField()
-    height = models.FloatField()
-    weight = models.FloatField()
-    income_status = models.CharField(max_length=50, choices=[
-        ('Disability', 'Disability'),
-        ('Retirement', 'Retirement'),
-        ('Employment', 'Employment'),
-        ('SelfEmployed', 'Self Employed')
-    ])
-    smoker = models.BooleanField()
+    def clean(self):
+        """Custom validation logic."""
+        if self.status == 'rejected' and not self.rejection_reason:
+            raise ValidationError("Rejection reason is required when rejecting a form.")
+
+        if self.validator and self.status != 'pending':
+            raise ValidationError("Only pending forms can be assigned to a validator.")
 
 
-class MedicalInfo(models.Model):
-    personal_info = models.OneToOneField(PersonalInfo, on_delete=models.CASCADE)
-    diagnosis = models.TextField()
-    medications = models.TextField()
 
 
-class InsuranceDetail(models.Model):
-    personal_info = models.OneToOneField(PersonalInfo, on_delete=models.CASCADE)
-    carrier = models.CharField(max_length=100, choices=[
-        ('AFLAC', 'AFLAC'),
-        ('SBLI', 'SBLI'),
-        ('RNA', 'RNA'),
-        ('Mutual of Omaha', 'Mutual of Omaha'),
-        ('CiCa', 'CiCa')
-    ])
-    plan_type = models.CharField(max_length=50, choices=[
-        ('Level', 'Level'),
-        ('Graded', 'Graded'),
-        ('Modified', 'Modified'),
-        ('Guaranteed Issue', 'Guaranteed Issue')
-    ])
-    coverage = models.DecimalField(max_digits=10, decimal_places=2)
-    premium = models.DecimalField(max_digits=10, decimal_places=2)
-
-
-class ContactDetail(models.Model):
-    personal_info = models.OneToOneField(PersonalInfo, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=15)
-    address = models.TextField()
-    state_born = models.CharField(max_length=50)
-    email = models.EmailField()
-
-class PaymentInfo(models.Model):
-    personal_info = models.OneToOneField(PersonalInfo, on_delete=models.CASCADE)
-    first_eft = models.DateField()
-    eft_schedule = models.CharField(max_length=50, choices=[
-        ('1st of the Month', '1st of the Month'),
-        ('3rd of the Month', '3rd of the Month'),
-        ('2nd Wednesday', '2nd Wednesday'),
-        ('3rd Wednesday', '3rd Wednesday'),
-        ('4th Wednesday', '4th Wednesday'),
-        ('Other', 'Other')
-    ])
-    ssn = models.CharField(max_length=11)
-    beneficiary_name = models.CharField(max_length=100)
-    beneficiary_relation = models.CharField(max_length=50, choices=[
-        ('Mother', 'Mother'),
-        ('Father', 'Father'),
-        ('Brother', 'Brother'),
-        ('Child', 'Child'),
-        ('Grandchild', 'Grandchild'),
-        ('Friend', 'Friend'),
-        ('State', 'State')
-    ])
-
-class BankDetail(models.Model):
-    payment_info = models.OneToOneField(PaymentInfo, on_delete=models.CASCADE)
-    name_on_account = models.CharField(max_length=100)
-    account_type = models.CharField(max_length=20, choices=[
-        ('Checking', 'Checking'),
-        ('Saving', 'Saving')
-    ])
-    bank_name = models.CharField(max_length=100)
-    routing_number = models.CharField(max_length=9)
-    checking_number = models.CharField(max_length=20)
-    account_info_source = models.CharField(max_length=50, choices=[
-        ('Cheque Book', 'Cheque Book'),
-        ('Bank Statement', 'Bank Statement'),
-        ('Bank Rep', 'Bank Rep'),
-        ('Online Application', 'Online Application')
-    ])
-
-class ApplicationStatus(models.Model):
-    personal_info = models.OneToOneField(PersonalInfo, on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=[
-        ('Approved', 'Approved'),
-        ('Not Approved', 'Not Approved')
-    ])
-    rejection_reason = models.TextField(blank=True, null=True)
-    policy_number = models.CharField(max_length=50, blank=True, null=True)
-    submission_status = models.CharField(max_length=20, choices=[
-        ('Submitted', 'Submitted'),
-        ('Submit Later', 'Submit Later')
-    ])
-
-class PaymentStatus(models.Model):
-    application_status = models.OneToOneField(ApplicationStatus, on_delete=models.CASCADE)
-    commission_status = models.CharField(max_length=20, choices=[
-        ('Paid', 'Paid'),
-        ('Not Paid', 'Not Paid')
-    ])
-    payment_issue = models.CharField(max_length=50, blank=True, null=True, choices=[
-        ('NSF', 'NSF'),
-        ('Invalid Account', 'Invalid Account'),
-        ('Closed', 'Closed'),
-        ('Frozen', 'Frozen'),
-        ('Non-Transactional', 'Non-Transactional'),
-        ('Lapsed', 'Lapsed'),
-        ('Cancelled', 'Cancelled'),
-        ('Declined', 'Declined')
-    ])
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
 
