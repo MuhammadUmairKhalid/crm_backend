@@ -1,0 +1,38 @@
+# Python-related files
+test
+*.pyc
+*.pyo
+*.pyd
+_pycache_/
+*.env
+*.venv
+venv/
+env/
+ENV/
+venv.bak/
+env.bak/
+management
+config.json
+
+# Django-related files
+db.sqlite3
+*.log
+staticfiles/
+media/
+dist/
+
+# Ignore migrations files but keep the folder
+*/migrations/
+!/migrations/
+!/migrations/_init_.py
+
+# If you're using macOS
+.DS_Store
+
+# Ignore local environment files
+.env
+
+# Ignore virtual environments
+.vscode/
+.idea/
+.PyCharm/
