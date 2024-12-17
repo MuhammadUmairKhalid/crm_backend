@@ -37,8 +37,8 @@
 						<img class="logo-lite" src="{% static 'dashboard/img/dark.jpeg' %}" alt="logo">
                             <img class="logo-dark" src="{% static 'dashboard/img/light.jpeg' %}" alt="logo">
 						</div>
-						<form id="signInForm" class="geex-content__authentication__form" method="POST">
-							{% csrf_token %}
+						<form id="signInForm" class="geex-content__authentication__form" method="POST" onsubmit="login(event)">
+							<!-- {% csrf_token %} -->
 							<h2 class="geex-content__authentication__title">Sign In to Your Account 👋</h2>
 							
 							<!-- Email Input -->

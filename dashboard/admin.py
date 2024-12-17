@@ -86,8 +86,8 @@ class CustomUserAdmin(BaseUserAdmin):
         if not request.user.is_authenticated:
             return self.model.objects.none()
         qs = super().get_queryset(request)
-        if request.user.role == 'admin':
-            return qs.filter(role__in=['agent', 'validator', 'account'])
+        if request.user.role == 'Admin':
+            return qs.filter(role__in=['Agent', 'validator', 'account'])
         elif request.user.is_superuser:
             return qs.filter(role='admin')  # Superusers can only see admin users
         elif request.user.role is None:
@@ -128,7 +128,7 @@ class FormAdmin(admin.ModelAdmin):
         return qs
 
     def save_model(self, request, obj, form, change):
-        if request.user.role == 'admin':
+        if request.user.role == 'admin' or request.user.is_superuser:
             if obj.agent.role != 'agent' or obj.validator.role != 'validator':
                 raise ValidationError("Only Agents and Validators can be assigned to forms.")
             if obj.validator and obj.status != 'pending':

@@ -80,7 +80,7 @@ class User(AbstractUser):
 
 class Company(models.Model):
     name = models.CharField(max_length=255)
-    bonus_formula = models.TextField()
+    bonus_formula = models.TextField(null=True, blank=True)
 
 class Form(models.Model):
     STATUS_CHOICES = [

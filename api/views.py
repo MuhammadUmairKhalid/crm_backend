@@ -5,10 +5,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle
+from rest_framework import viewsets
 from api.permissions import IsAgent
 from dashboard.models import User
 from rest_framework import status
 from django.contrib.auth.hashers import check_password
+from .serializers import CompanySerializer, FormSerializer
+from dashboard.models import Form,Company
 class Login(APIView):
     authentication_classes = [] 
     permission_classes = [AllowAny]
@@ -17,7 +20,7 @@ class Login(APIView):
     def post(self, request):
         user_name = request.data.get("user_name")
         password = request.data.get("password")
-
+        print(user_name,password)
         if not user_name or not password:
             return Response(
                 {"status": "username and password are required"},
@@ -41,15 +44,47 @@ class Login(APIView):
             status=status.HTTP_200_OK
         )
     
+class FormDataViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAgent]
+    queryset = Form.objects.all()
+    serializer_class = FormSerializer
 
-class AddFormData(APIView):
-    authentication_classes = [TokenAuthentication,] 
-    permission_classes = [IsAuthenticated,IsAgent]
-    throttle_classes = [AnonRateThrottle]
+    def create(self, request, *args, **kwargs):
+        form_data = request.data.get('form')
+        company_name = form_data('Insurance company')
+        company = Company.objects.filter(name=company_name).first()
+        if not company:
+            company_serializer = CompanySerializer(data=company_name)
+            if company_serializer.is_valid():
+                company = company_serializer.save()
+            else:
+                return Response(
+                    {"status": "error", "errors": company_serializer.errors},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        form_data['company'] = company.id 
+        form_data['agent'] = request.user.id 
 
-    def post(self, request):
-        
+        form_serializer = self.get_serializer(data=form_data)
+        if form_serializer.is_valid():
+            form_serializer.save()
+            return Response(
+                {"status": "success", "data": form_serializer.data},
+                status=status.HTTP_201_CREATED
+            )
+        else:
+            return Response(
+                {"status": "error", "errors": form_serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    def destroy(self, request, *args, **kwargs):
         return Response(
-            {"status": "success"},
-            status=status.HTTP_200_OK
-        )
+                {"status": "error","messgae":"You cannot delete a form"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    def update(self, request, *args, **kwargs):
+        return Response(
+                {"status": "error","messgae":"You cannot update a form"},
+                status=status.HTTP_400_BAD_REQUEST
+            )

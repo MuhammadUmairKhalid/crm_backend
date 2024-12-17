@@ -1,38 +1,32 @@
 function login(event) {
-    // Prevent form submission default behavior
     event.preventDefault();
-
-    // Get username and password from input fields
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    // Prepare the request payload
     const data = {
-        username: username,
+        user_name: username,
         password: password
     };
 
-    // Send data to the API using fetch
     fetch("http://127.0.0.1:8000/api/login/", {
-        method: "POST",  // HTTP method
+        method: "POST", 
         headers: {
-            "Content-Type": "application/json",  // Set the content type to JSON
+            "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),  // Convert data to JSON
+        body: JSON.stringify(data),
     })
-    .then(response => response.json())  // Parse the JSON response
+    .then(response => response.json())
     .then(data => {
-        // Check if the status is success
         if (data.status === "success") {
             console.log(data)
-            // Check if the role is 'agent'
             if (data.role === "agent") {
-                // Redirect to the agent's dashboard
-                window.location.href = "/agentform"; // Adjust the URL to your agent dashboard
+                localStorage.setItem("token", data.token);
+                window.location.href = "/agentform";
             } else {
                 alert("Unauthorized role");
             }
         } else {
+            console.log(data)
             alert("Login failed. Please check your credentials.");
         }
     })
@@ -40,7 +34,5 @@ function login(event) {
         console.error("Error:", error);
         alert("An error occurred. Please try again.");
     });
-
-    // Return false to prevent default form submission
     return false;
 }
