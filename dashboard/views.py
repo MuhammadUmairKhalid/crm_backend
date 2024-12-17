@@ -78,5 +78,10 @@ def submit_agent_form(request):
 
     return redirect('agent_form')  # If the request method is not POST, redirect to the form
 
+def validate_table(request):
+    return render(request, 'dashboard/validatetable.html')  
+
+def validate_form(request):
+    return render(request, 'dashboard/validateform.html')  
 
 
