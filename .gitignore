@@ -37,3 +37,10 @@ dist/
 .idea/
 .PyCharm/
 *venv
+venv/Lib/site-packages/django/db/models/functions/__pycache__/__init__.cpython-311.pyc
+venv/Lib/site-packages/django/db/models/functions/__pycache__/comparison.cpython-311.pyc
+venv/Lib/site-packages/django/db/models/functions/__pycache__/datetime.cpython-311.pyc
+venv/Lib/site-packages/django/db/models/functions/__pycache__/math.cpython-311.pyc
+venv/Lib/site-packages/django/db/models/functions/__pycache__/mixins.cpython-311.pyc
+venv/Lib/site-packages/django/db/models/functions/__pycache__/text.cpython-311.pyc
+venv/Lib/site-packages/django/db/models/functions/__pycache__/window.cpython-311.pyc
