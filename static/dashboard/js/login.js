@@ -1,4 +1,7 @@
-function login() {
+function login(event) {
+    // Prevent form submission default behavior
+    event.preventDefault();
+
     // Get username and password from input fields
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -21,6 +24,7 @@ function login() {
     .then(data => {
         // Check if the status is success
         if (data.status === "success") {
+            console.log(data)
             // Check if the role is 'agent'
             if (data.role === "agent") {
                 // Redirect to the agent's dashboard
@@ -36,4 +40,7 @@ function login() {
         console.error("Error:", error);
         alert("An error occurred. Please try again.");
     });
+
+    // Return false to prevent default form submission
+    return false;
 }
