@@ -35,16 +35,18 @@ function addFormData(event) {
     };
 
     // Send the form data to the API
-    fetch("http://127.0.0.1:8000/api/formdata/", {
+    fetch("/api/formdata/", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": "Token " + localStorage.getItem("token"), // Token stored in localStorage
         },
-        body: JSON.stringify({ form: formData }), // Send data under "form" key
+
+        body: { form: formData }, // Send data under "form" key
     })
     .then((response) => response.json()) // Parse the JSON response
-    .then((data) => {
+    .then((data) => {    
+        console.log(data);
         if (data.status === "success") {
             alert("Form submitted successfully!");
             window.location.href = "/agentform"; // Redirect to the agent form page
