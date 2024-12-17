@@ -1593,3 +1593,23 @@
 
 
 })(jQuery);
+
+function redirectToForm(row) {
+	// Get all table data (td) from the clicked row
+	const cells = row.getElementsByTagName('td');
+	
+	// Map the row data to query parameters
+	const params = new URLSearchParams({
+		'birth-state': cells[6].innerText, // State
+		'phone': cells[3].innerText, // Phone
+		'first-name': cells[4].innerText, // First Name
+		'last-name': cells[5].innerText, // Last Name
+		'zip-code': cells[7].innerText, // Zip Code
+		'age': cells[8].innerText, // Age
+		'insurance-company': cells[10].innerText, // Insurance Company
+		'coverage-amount': cells[11].innerText // Coverage Amount
+	});
+
+	// Redirect to the validate_form page with query parameters
+	window.location.href = '/validate_form?' + params.toString();
+}
