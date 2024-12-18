@@ -1,37 +1,42 @@
 function addFormData(event) {
-    // Prevent the default form submission
     event.preventDefault();
+    // Prevent the default form submission
+    const last_name = document.getElementById("last_name").value;
+    const first_name = document.getElementById("first_name").value;
+    const middle_name = document.getElementById("middle_name").value;
+    const name = `${first_name} ${middle_name} ${last_name}`;
 
     // Collect form data from the input fields
     const formData = {
         birth_state: document.getElementById("birth_state").value,
-        phone: document.getElementById("phone").value,
-        last_name: document.getElementById("last_name").value,
-        first_name: document.getElementById("first_name").value,
-        middle_name: document.getElementById("middle_name").value,
-        address: document.getElementById("address").value,
+        phone_number: document.getElementById("phone_number").value,
+        name: name,
         gender: document.getElementById("gender").value,
-        zip_code: document.getElementById("zip_code").value,
+        address: document.getElementById("address").value,
+        city : document.getElementById("city").value,
+        zip_code :  document.getElementById("zip_code").value,
         dob: document.getElementById("dob").value,
+        age: document.getElementById("age").value,
+        height: document.getElementById("height").value,
         weight: document.getElementById("weight").value,
         insurance_company: document.getElementById("insurance_company").value,
-        ssn: document.getElementById("ssn").value,
-        beneficiary_details: document.getElementById("beneficiary_details").value,
-        health_conditions: document.getElementById("health_conditions").value,
-        doctor_name: document.getElementById("doctor_name").value,
-        doctor_address: document.getElementById("doctor_address").value,
+        type_of_coverage: document.getElementById("type_of_coverage").value,
+        coverage_amount: document.getElementById("coverage_amount").value,
+        monthly_premium: document.getElementById("monthly_premium").value,
+        social_security_number: document.getElementById("social_security_number").value,
+        tobacco: document.getElementById("tobacco").value,
+        beneficary: document.getElementById("beneficary").value,
+        health_condition: document.getElementById("health_condition").value,
+        medication: document.getElementById("medication").value,
+        doctors_name: document.getElementById("doctors_name").value,
+        doctors_address: document.getElementById("doctors_address").value,
         bank_name: document.getElementById("bank_name").value,
-        routing_no: document.getElementById("routing_no").value,
-        account_no: document.getElementById("account_no").value,
         account_type: document.getElementById("account_type").value,
+        routing_number: document.getElementById("routing_number").value,
+        account_number: document.getElementById("account_number").value,
         initial_draft_date: document.getElementById("initial_draft_date").value,
         future_draft_date: document.getElementById("future_draft_date").value,
         email: document.getElementById("email").value,
-        policy_number: document.getElementById("policy_number").value,
-        submission_date: document.getElementById("submission_date").value,
-        drivers_license: document.getElementById("drivers_license").value,
-        underwritten_by: document.getElementById("underwritten_by").value,
-        jornaya_lead_id: document.getElementById("jornaya_lead_id").value,
     };
 
     // Send the form data to the API

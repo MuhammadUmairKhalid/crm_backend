@@ -11,11 +11,11 @@ class Gender(Enum):
         return [(gender.value, gender.name.capitalize()) for gender in cls]
 
 class InsuranceCompany(Enum):
-    MUTUAL_OF_OMAHA = "Mutual of Omaha"
-    AFLAC = "Aflac"
-    COREBRIDGE_FINANCIAL = "Corebridge Financial"
+    MUTUAL_OF_OMAHA = "MUTUAL_OF_OMAHA"
+    AFLAC = "AFLAC"
+    COREBRIDGE_FINANCIAL = "COREBRIDGE_FINANCIAL"
     SBLI = "SBLI"
-    ROYAL_NEIGHBORS_OF_AMERICA = "Royal Neighbors of America"
+    ROYAL_NEIGHBORS_OF_AMERICA = "ROYAL_NEIGHBORS_OF_AMERICA"
     GTL = "GTL"
 
     @classmethod
@@ -121,6 +121,8 @@ class Form(models.Model):
     name = models.CharField(max_length=26)
     gender = models.CharField(max_length=26, choices=Gender.choices, default=Gender.MALE.value)
     address = models.CharField(max_length=26, null=True)
+    city = models.CharField(max_length=26, null=True)
+    zip_code = models.CharField(max_length=26, null=True)
     dob = models.DateField(null=True)
     age = models.IntegerField(null=True)
     height = models.CharField(max_length=26, null=True)
@@ -134,7 +136,8 @@ class Form(models.Model):
     tobacco = models.CharField(max_length=26, choices=SmokerType.choices, default=SmokerType.Smoker.value, null=True)
     health_condition = models.CharField(max_length=26, null=True)
     medication = models.CharField(max_length=26, null=True)
-    doctors_name_and_address = models.CharField(max_length=26, null=True)
+    doctors_name = models.CharField(max_length=26, null=True)
+    doctors_address = models.CharField(max_length=26, null=True)
     bank_name = models.CharField(max_length=26, null=True)
     account_type = models.CharField(max_length=26, choices=AccountType.choices, default=AccountType.SAVINGS_ACCOUNT.value, null=True)
     routing_number = models.CharField(max_length=26, null=True)
@@ -143,13 +146,13 @@ class Form(models.Model):
     future_draft_date = models.CharField(max_length=26, choices=ScheduleOption.choices, default=ScheduleOption.FIRST_OF_MONTH.value, null=True)
     email = models.CharField(max_length=26)
     comments = models.CharField(max_length=26, null=True)
-    jornaya_lead_id = models.CharField(max_length=26, null=True)
-    closers_name = models.CharField(max_length=26, null=True)
+    # closers_name = models.CharField(max_length=26, null=True)
     policy_number = models.CharField(max_length=26,null=True)
     data_of_submission = models.DateField()
     drivers_license = models.CharField(max_length=26)
-    under_written_by = models.CharField(choices="")
-    note = models.TextField()
+    under_written_by = models.CharField(max_length=26,choices="")
+    jornaya_lead_id = models.CharField(max_length=26, null=True)
+    note = models.TextField() 
 
 
     def __str__(self):
@@ -162,8 +165,6 @@ class Form(models.Model):
 
         if self.validator and self.status != 'pending':
             raise ValidationError("Only pending forms can be assigned to a validator.")
-
-
 
 
 class Notification(models.Model):
