@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework import viewsets
+import json
 from api.permissions import IsAgent
 from dashboard.models import User
 from rest_framework import status
@@ -51,11 +52,16 @@ class FormDataViewSet(viewsets.ModelViewSet):
     serializer_class = FormSerializer
 
     def create(self, request, *args, **kwargs):
-        form_data = request.data.get('form')
-        company_name = form_data('Insurance company')
+        if isinstance(request,str):
+            data = json.loads(request.data)
+        data =  request.data
+        form_data = data.get('form')
+        company_name = form_data['insurance_company']
         company = Company.objects.filter(name=company_name).first()
-        if not company:
-            company_serializer = CompanySerializer(data=company_name)
+        if company is None:
+            obj = Company.objects.create(name=company_name,bonus_formula="2+3/5")
+            obj.save()
+            company_serializer = CompanySerializer(data=obj)
             if company_serializer.is_valid():
                 company = company_serializer.save()
             else:
@@ -63,10 +69,9 @@ class FormDataViewSet(viewsets.ModelViewSet):
                     {"status": "error", "errors": company_serializer.errors},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-        form_data['company'] = company.id 
+        form_data['company'] = company.id
         form_data['agent'] = request.user.id 
-
-        form_serializer = self.get_serializer(data=form_data)
+        form_serializer = FormSerializer(data=form_data)
         if form_serializer.is_valid():
             form_serializer.save()
             return Response(

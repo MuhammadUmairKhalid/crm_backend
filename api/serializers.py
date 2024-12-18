@@ -7,7 +7,7 @@ User = get_user_model()
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['id', 'name', 'bonus_formula']
+        fields = ['id', 'name']
 
 class FormSerializer(serializers.ModelSerializer):
     class Meta:

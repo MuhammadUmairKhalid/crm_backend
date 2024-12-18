@@ -145,6 +145,12 @@ class Form(models.Model):
     comments = models.CharField(max_length=26, null=True)
     jornaya_lead_id = models.CharField(max_length=26, null=True)
     closers_name = models.CharField(max_length=26, null=True)
+    policy_number = models.CharField(max_length=26,null=True)
+    data_of_submission = models.DateField()
+    drivers_license = models.CharField(max_length=26)
+    under_written_by = models.CharField(choices="")
+    note = models.TextField()
+
 
     def __str__(self):
         return f"Form #{self.id} by {self.agent.username} for {self.company.name}"
