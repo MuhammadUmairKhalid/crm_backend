@@ -10,6 +10,8 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class FormSerializer(serializers.ModelSerializer):
+    initial_draft_date = serializers.DateField(input_formats=["%Y-%m-%d"])
+    dob = serializers.DateField(input_formats=["%Y-%m-%d"])
     class Meta:
         model = Form
         fields ='__all__'

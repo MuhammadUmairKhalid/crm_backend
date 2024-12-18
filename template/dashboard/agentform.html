@@ -380,9 +380,9 @@
 			<div>
 				<label for="account-type">Account Type</label>
 				<select id="account-type">
-					<option>Checking Account</option>
-					<option>Savings Account</option>
-					<option>Direct Express Card</option>
+					<option>CheckingAccount</option>
+					<option>SavingsAccount</option>
+					<option>DirectExpressCard</option>
 				</select>
 			</div>
 			<div>
@@ -398,7 +398,7 @@
 		<div class="grid-3">
 			<div>
 				<label for="initial-draft-date">Initial Draft Date</label>
-				<input type="text" id="initial-draft-date" placeholder="MM/DD/YYYY">
+				<input type="date" id="initial-draft-date" placeholder="MM/DD/YYYY">
 			</div>
 			<div>
 				<label for="future-draft-date">Future Draft Date</label>
@@ -410,14 +410,7 @@
 					<option>4th Wednesday of each month</option>
 				</select>
 			</div>
-			<div>
-				<label for="account-type">Account Type</label>
-				<select id="account-type">
-					<option>Checking Account</option>
-					<option>Savings Account</option>
-					<option>Direct Express Card</option>
-				</select>
-			</div>
+
 			<div>
 				<label for="email">E-mail</label>
 				<input type="email" id="email" placeholder="example@email.com">
@@ -438,6 +431,7 @@
 	<script src="{% static 'dashboard/vendor/js/bootstrap/bootstrap.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.27.0/dist/apexcharts.min.js"></script>
 	<script src="{% static 'dashboard/js/main.js' %}"></script>
+	<script src="{% static 'dashboard/js/add_form_data.js' %}"></script>
 	<!-- endinject-->
 </body>
 </html>

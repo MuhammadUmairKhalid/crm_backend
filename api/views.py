@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework import viewsets
 import json
-from api.permissions import IsAgent
+from api.permissions import IsAgent,IsValidator
 from dashboard.models import User
 from rest_framework import status
 from django.contrib.auth.hashers import check_password
@@ -52,10 +52,11 @@ class FormDataViewSet(viewsets.ModelViewSet):
     serializer_class = FormSerializer
 
     def create(self, request, *args, **kwargs):
-        if isinstance(request,str):
-            data = json.loads(request.data)
-        data =  request.data
-        form_data = data.get('form')
+        form_data = request.data['form']
+        if form_data["initial_draft_date"]=='' and form_data["dob"]=='':
+            return Response(
+                {"status": "error", "errors": "Both initial_draft_date and dob cannot be provided"},
+            )
         company_name = form_data['insurance_company']
         company = Company.objects.filter(name=company_name).first()
         if company is None:
@@ -71,6 +72,12 @@ class FormDataViewSet(viewsets.ModelViewSet):
                 )
         form_data['company'] = company.id
         form_data['agent'] = request.user.id 
+        print(company.id)
+        print(request.user.id)
+        print(form_data['initial_draft_date'])
+        print(form_data['dob'])
+        print(type(form_data['initial_draft_date']))
+        print(type(form_data['dob']))
         form_serializer = FormSerializer(data=form_data)
         if form_serializer.is_valid():
             form_serializer.save()
@@ -79,6 +86,7 @@ class FormDataViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_201_CREATED
             )
         else:
+            print(form_serializer.errors)
             return Response(
                 {"status": "error", "errors": form_serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST
@@ -92,4 +100,27 @@ class FormDataViewSet(viewsets.ModelViewSet):
         return Response(
                 {"status": "error","messgae":"You cannot update a form"},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+    
+
+class validatorformViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsValidator]  # Assuming `IsValidator` is a custom permission class
+    queryset = Form.objects.all()
+    serializer_class = FormSerializer
+
+    def list(self, request, *args, **kwargs):
+        try:
+            pending_forms = Form.objects.filter(status="pending")
+    
+            serializer = self.get_serializer(pending_forms, many=True)
+            
+            return Response(
+                {"status": "success", "data": serializer.data},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"status": "error", "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

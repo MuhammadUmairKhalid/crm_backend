@@ -3,60 +3,70 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from enum import Enum
 class Gender(Enum):
-    MALE = 'male'
-    FEMALE = 'female'
+    MALE = 'Male'
+    FEMALE = 'Female'
 
     @classmethod
     def choices(cls):
         return [(gender.value, gender.name.capitalize()) for gender in cls]
-
-class InsuranceCompany(Enum):
-    MUTUAL_OF_OMAHA = "MUTUAL_OF_OMAHA"
-    AFLAC = "AFLAC"
-    COREBRIDGE_FINANCIAL = "COREBRIDGE_FINANCIAL"
-    SBLI = "SBLI"
-    ROYAL_NEIGHBORS_OF_AMERICA = "ROYAL_NEIGHBORS_OF_AMERICA"
-    GTL = "GTL"
+    
+class underwriting_status(Enum):
+    DhurbaPokhrel = 'Dhurba Pokhrel'
+    SantoshDevkota = 'SantoshDevkota'
+    ShoaibAkram = 'ShoaibAkram'
+    SureshMahato = 'SureshMahato'
 
     @classmethod
     def choices(cls):
-        return [(company.name, company.value) for company in cls]
+        return [(key.name, key.value) for key in cls]
+
+# class InsuranceCompany(Enum):
+#     MUTUAL_OF_OMAHA = 'Mutual Of Omaha'
+#     AFLAC = 'Aflac'
+#     COREBRIDGE_FINANCIAL = 'Corebridge Financial'
+#     SBLI = 'SBLI'
+#     ROYAL_NEIGHBORS_OF_AMERICA = 'Royal Neighbors Of America'
+#     GTL = 'GTL'
+
+#     @classmethod
+#     def choices(cls):
+#         return [(company.value, company.value) for company in cls]
     
 class InsuranceType(Enum):
-    LEVEL = "Level"
-    STANDARD = "Standard"
-    GRADED = "Graded"
-    MODIFIED = "Modified"
-    GUARANTEED_ISSUE = "Guaranteed Issue"
+    Level = 'Level'
+    Standard = "Standard"
+    Graded = "Graded"
+    Modified = "Modified"
+    GuaranteedIssue = "GuaranteedIssue"
 
     @classmethod
     def choices(cls):
         return [(type.name, type.value) for type in cls]
 
 class SmokerType(Enum):
-    Smoker = 'smoker'
-    Non_Smoker = 'non_smoker'
+    Smoker = 'Smoker'
+    Non_Smoker = 'Non-Smoker'
 
     @classmethod
     def choices(cls):
         return [(smoker.value, smoker.name.capitalize()) for smoker in cls]
     
 class AccountType(Enum):
-    CHECKING_ACCOUNT = "Checking Account"
-    SAVINGS_ACCOUNT = "Savings Account"
-    DIRECT_EXPRESS_CARD = "Direct Express Card"
+    CheckingAccount = "CheckingAccount"
+    SavingsAccount = "SavingsAccount"
+    DirectExpressCard = "DirectExpressCard"
 
     @classmethod
     def choices(cls):
         return [(account.name, account.value) for account in cls]
     
 
-class ScheduleOption(Enum):
-    FIRST_OF_MONTH = "1st of each month"
-    THIRD_OF_MONTH = "3rd of each month"
-    SECOND_WEDNESDAY = "2nd Wednesday of each month"
-    THIRD_WEDNESDAY = "3rd Wednesday of each month"
-    FOURTH_WEDNESDAY = "4th Wednesday of each month"
+# class ScheduleOption(Enum):
+#     FIRST_OF_MONTH = "1stofeachmonth"
+#     THIRD_OF_MONTH = "3rd of each month"
+#     SECOND_WEDNESDAY = "2nd Wednesday of each month"
+#     THIRD_WEDNESDAY = "3rd Wednesday of each month"
+#     FOURTH_WEDNESDAY = "4th Wednesday of each month"
 
     @classmethod
     def choices(cls):
@@ -88,6 +98,20 @@ class Form(models.Model):
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
     ]
+    SCHEDULE_CHOICES = [
+    ("1st of each month", "1st of each month"),
+    ("3rd of each month", "3rd of each month"),
+    ("2nd Wednesday of each month", "2nd Wednesday of each month"),
+    ("3rd Wednesday of each month", "3rd Wednesday of each month"),
+    ("4th Wednesday of each month", "4th Wednesday of each month")
+    ]
+    ROLE_CHOICES = [
+    ('Mutual Of Omaha', 'Mutual Of Omaha'),
+    ('Aflac', 'Aflac'),
+    ('Corebridge Financial', 'Corebridge Financial'),
+    ('SBLI', 'SBLI'),
+    ('Royal Neighbors Of America', 'Royal Neighbors Of America'),
+    ('GTL', 'GTL'),]
 
     agent = models.ForeignKey(
         'User',
@@ -127,8 +151,8 @@ class Form(models.Model):
     age = models.IntegerField(null=True)
     height = models.CharField(max_length=26, null=True)
     weight = models.CharField(max_length=26, null=True)
-    insurance_company = models.CharField(max_length=26, choices=InsuranceCompany.choices, default=InsuranceCompany.MUTUAL_OF_OMAHA.value, null=True)
-    type_of_coverage = models.CharField(max_length=26, choices=InsuranceType.choices, default=InsuranceType.MODIFIED.value, null=True)
+    insurance_company = models.CharField(max_length=26, choices=ROLE_CHOICES ,null=True)
+    type_of_coverage = models.CharField(max_length=26, choices=InsuranceType.choices, default=InsuranceType.Modified.value, null=True)
     coverage_amount = models.CharField(max_length=26, null=True)
     monthly_premium = models.CharField(max_length=26, null=True)
     social_security_number = models.CharField(max_length=26)
@@ -139,20 +163,20 @@ class Form(models.Model):
     doctors_name = models.CharField(max_length=26, null=True)
     doctors_address = models.CharField(max_length=26, null=True)
     bank_name = models.CharField(max_length=26, null=True)
-    account_type = models.CharField(max_length=26, choices=AccountType.choices, default=AccountType.SAVINGS_ACCOUNT.value, null=True)
+    account_type = models.CharField(max_length=26, choices=AccountType.choices, default=AccountType.SavingsAccount.value, null=True)
     routing_number = models.CharField(max_length=26, null=True)
     account_number = models.CharField(max_length=26, null=True)
     initial_draft_date = models.DateField(null=True)
-    future_draft_date = models.CharField(max_length=26, choices=ScheduleOption.choices, default=ScheduleOption.FIRST_OF_MONTH.value, null=True)
+    future_draft_date = models.CharField(max_length=27,choices=SCHEDULE_CHOICES,null=True)
     email = models.CharField(max_length=26)
     comments = models.CharField(max_length=26, null=True)
     # closers_name = models.CharField(max_length=26, null=True)
     policy_number = models.CharField(max_length=26,null=True)
-    data_of_submission = models.DateField()
-    drivers_license = models.CharField(max_length=26)
-    under_written_by = models.CharField(max_length=26,choices="")
+    data_of_submission = models.DateField(null=True)
+    drivers_license = models.CharField(max_length=26,null=True)
+    under_written_by = models.CharField(max_length=26,choices=underwriting_status.choices, default=underwriting_status.SureshMahato.value, null=True)
     jornaya_lead_id = models.CharField(max_length=26, null=True)
-    note = models.TextField() 
+    note = models.TextField(null=True, blank=True) 
 
 
     def __str__(self):
