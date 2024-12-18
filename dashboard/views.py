@@ -26,4 +26,5 @@ def validate_table(request):
 def validate_form(request):
     return render(request, 'dashboard/validateform.html')  
 
-
+def change_password(request):
+    return render(request, 'dashboard/change-password.html') 

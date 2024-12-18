@@ -352,8 +352,11 @@
 			<div>
 				<label for="coverage-type">Type of Coverage</label>
 				<select id="coverage-type">
-					<option>Term Life</option>
-					<option>Whole Life</option>
+					<option>Level</option>
+					<option>Graded</option>
+					<option>Modified</option>
+					<option>Standard</option>
+					<option>Guranteed Issue</option>
 				</select>
 			</div>
 			<div>
@@ -375,8 +378,8 @@
 			<div>
 				<label for="tobacco">Tobacco</label>
 				<select id="tobacco">
-					<option>Yes</option>
-					<option>No</option>
+					<option>Smoker</option>
+					<option>Non-Smoker</option>
 				</select>
 			</div>
 		</div>
@@ -422,8 +425,9 @@
 			<div>
 				<label for="account-type">Account Type</label>
 				<select id="account-type">
-					<option>Checking</option>
-					<option>Savings</option>
+					<option>Checking Account</option>
+					<option>Savings Account</option>
+					<option>Direct Express Card</option>
 				</select>
 			</div>
 			<div>
@@ -436,7 +440,34 @@
 			</div>
 		</div>
 
-
+		<div class="grid-3">
+			<div>
+				<label for="initial-draft-date">Initial Draft Date</label>
+				<input type="text" id="initial-draft-date" placeholder="MM/DD/YYYY">
+			</div>
+			<div>
+				<label for="future-draft-date">Future Draft Date</label>
+				<select id="future-draft-date">
+					<option>1st of each month</option>
+					<option>3rd of each month</option>
+					<option>2nd Wednesday of each month</option>
+					<option>3rd Wednesday of each month</option>
+					<option>4th Wednesday of each month</option>
+				</select>
+			</div>
+			<div>
+				<label for="account-type">Account Type</label>
+				<select id="account-type">
+					<option>Checking Account</option>
+					<option>Savings Account</option>
+					<option>Direct Express Card</option>
+				</select>
+			</div>
+			<div>
+				<label for="email">E-mail</label>
+				<input type="email" id="email" placeholder="example@email.com">
+			</div>
+		</div>
 
 		<!-- Submit Button -->
 		<div class="form-submit">
