@@ -1613,3 +1613,7 @@ function redirectToForm(row) {
 	// Redirect to the validate_form page with query parameters
 	window.location.href = '/validate_form?' + params.toString();
 }
+
+let currentPassword = document.getElementById('currentPassword').value;
+let newPassword1 = document.getElementById('newPassword1').value;
+let newPassword2 = document.getElementById('newPassword2').value;
