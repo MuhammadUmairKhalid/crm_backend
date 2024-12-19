@@ -1613,7 +1613,17 @@ function redirectToForm(row) {
 	// Redirect to the validate_form page with query parameters
 	window.location.href = '/validate_form?' + params.toString();
 }
+document.addEventListener("DOMContentLoaded", function() {
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
 
-let currentPassword = document.getElementById('currentPassword').value;
-let newPassword1 = document.getElementById('newPassword1').value;
-let newPassword2 = document.getElementById('newPassword2').value;
+    if (username && role) {
+        // Set username and role in respective HTML elements
+        document.getElementById("userName").textContent = username;  // Set username in the element with id 'userName'
+        document.getElementById("userRole").textContent = role;      // Set role in the element with id 'userRole'
+    } else {
+        // If not found, handle the case (e.g., user is not logged in or session expired)
+        console.error("User details not found in localStorage.");
+        alert("Please log in first.");
+    }
+});
