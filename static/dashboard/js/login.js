@@ -18,11 +18,15 @@ function login(event) {
     .then(response => response.json())
     .then(data => {
         if (data.status === "success") {
-            console.log(data)
             if (data.role === "agent") {
                 localStorage.setItem("token", data.token);
                 window.location.href = "/agentform";
-            } else {
+            }
+            else if(data.role === "validator"){
+                localStorage.setItem("token", data.token);
+                window.location.href = "/validate_form/";
+            }
+             else {
                 alert("Unauthorized role");
             }
         } else {

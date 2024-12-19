@@ -72,12 +72,6 @@ class FormDataViewSet(viewsets.ModelViewSet):
                 )
         form_data['company'] = company.id
         form_data['agent'] = request.user.id 
-        print(company.id)
-        print(request.user.id)
-        print(form_data['initial_draft_date'])
-        print(form_data['dob'])
-        print(type(form_data['initial_draft_date']))
-        print(type(form_data['dob']))
         form_serializer = FormSerializer(data=form_data)
         if form_serializer.is_valid():
             form_serializer.save()
