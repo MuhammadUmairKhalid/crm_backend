@@ -26,6 +26,19 @@ def change_password(request):
 def view_agent(request):
     return render(request, 'dashboard/viewagentform.html') 
 
+def super_user(request):
+    return render(request, 'dashboard/superuser.html') 
+
+def add_users(request):
+    return render(request, 'dashboard/addingusers.html') 
+
+def view_users(request):
+    return render(request, 'dashboard/viewusers.html') 
+
+def edit_user(request):
+    return render(request, 'dashboard/edituser.html') 
+
+
 def logout_view(request):
     logout(request) 
     return redirect('login') 
