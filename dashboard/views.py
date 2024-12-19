@@ -23,6 +23,8 @@ def validate_form(request):
 def change_password(request):
     return render(request, 'dashboard/change-password.html') 
 
+def view_agent(request):
+    return render(request, 'dashboard/viewagentform.html') 
 
 def logout_view(request):
     logout(request) 

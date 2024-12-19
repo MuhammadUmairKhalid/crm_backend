@@ -18,21 +18,23 @@ function login(event) {
     .then(response => response.json())
     .then(data => {
         if (data.status === "success") {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("username", data.user_name);  // Store the username
+            localStorage.setItem("role", data.role);            // Store the role
+        
             if (data.role === "agent") {
-                localStorage.setItem("token", data.token);
                 window.location.href = "/agentform";
             }
             else if(data.role === "validator"){
-                localStorage.setItem("token", data.token);
                 window.location.href = "/validate_form/";
             }
-             else {
+            else {
                 alert("Unauthorized role");
             }
         } else {
-            console.log(data)
             alert("Login failed. Please check your credentials.");
         }
+        
     })
     .catch(error => {
         console.error("Error:", error);
@@ -40,3 +42,4 @@ function login(event) {
     });
     return false;
 }
+

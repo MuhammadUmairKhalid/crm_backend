@@ -40,6 +40,7 @@ class Login(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         token, _ = Token.objects.get_or_create(user=user)
+        print(user.username)
         return Response(
             {"status": "success", "token": str(token),"role":user.role,"name":user.username},
             status=status.HTTP_200_OK
