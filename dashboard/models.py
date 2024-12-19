@@ -101,7 +101,7 @@ class Form(models.Model):
     SCHEDULE_CHOICES = [
     ("1st of each month", "1st of each month"),
     ("3rd of each month", "3rd of each month"),
-    ("2nd Wednesday of each month", "2nd Wednesday of each month"),
+    ("2nd Wednesday of each month", "2nd Wednesday of each month"), 
     ("3rd Wednesday of each month", "3rd Wednesday of each month"),
     ("4th Wednesday of each month", "4th Wednesday of each month")
     ]

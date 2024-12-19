@@ -44,7 +44,7 @@ function addFormData(event) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Token " + localStorage.getItem("token"), // Token stored in localStorage
+            "Authorization": "Token " + localStorage.getItem("token"),
         },
 
         body: JSON.stringify({ form: formData }),

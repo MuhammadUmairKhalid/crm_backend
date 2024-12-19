@@ -41,15 +41,18 @@ class Login(APIView):
             )
         token, _ = Token.objects.get_or_create(user=user)
         return Response(
-            {"status": "success", "token": str(token),"role":user.role,"name":user.name},
+            {"status": "success", "token": str(token),"role":user.role,"name":user.username},
             status=status.HTTP_200_OK
         )
     
 class FormDataViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsAgent]
-    queryset = Form.objects.all()
+    # queryset = Form.objects.all()
     serializer_class = FormSerializer
+
+    def get_queryset(self):
+        return Form.objects.filter(agent=self.request.user)
 
     def create(self, request, *args, **kwargs):
         form_data = request.data['form']
@@ -104,6 +107,7 @@ class validatorformViewSet(viewsets.ModelViewSet):
     serializer_class = FormSerializer
 
     def list(self, request, *args, **kwargs):
+        print("hello")
         try:
             pending_forms = Form.objects.filter(status="pending")
     

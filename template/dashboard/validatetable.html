@@ -375,7 +375,6 @@
 	</div> 
 <div class="geex-content__section geex-content__form table-responsive">
 
-
     <table class="table-reviews-geex-1">
         <thead>
             <tr>
@@ -394,34 +393,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr onclick="redirectToForm(this)">
-                <td>Edit</td>
-                <td>2024-06-01</td>
-                <td>001</td>
-                <td>123-456-7890</td>
-                <td>John</td>
-                <td>Doe</td>
-                <td>NC</td>
-                <td>12345</td>
-                <td>35</td>
-                <td>Premium</td>
-                <td>Mutual Of Omaha</td>
-                <td>$100,000</td>
-            </tr>
-            <tr onclick="redirectToForm(this)">
-                <td>Edit</td>
-                <td>2024-06-02</td>
-                <td>002</td>
-                <td>234-567-8901</td>
-                <td>Jane</td>
-                <td>Smith</td>
-                <td>TX</td>
-                <td>67890</td>
-                <td>29</td>
-                <td>Basic</td>
-                <td>State Farm</td>
-                <td>$50,000</td>
-            </tr>
+            
         </tbody>
     </table>
 </div>
@@ -433,6 +405,55 @@
 	<script src="{% static 'dashboard/vendor/js/bootstrap/bootstrap.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.27.0/dist/apexcharts.min.js"></script>
 	<script src="{% static 'dashboard/js/main.js' %}"></script>
+	<script>
+		async function fetchData() {
+			try {
+				// Retrieve the token from local storage
+				const token = localStorage.getItem('token'); 
+	
+				if (!token) {
+					console.error('Token not found in local storage.');
+					return; 
+				}
+				const response = await fetch('/api/get-forms/', {
+					method: 'GET',
+					headers: {
+						"Content-Type": "application/json", 
+						"Authorization": "Token " + token,
+					}
+				});
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+				const data = await response.json();
+				console.log(data);
+				const tableBody = document.querySelector('tbody');
+				tableBody.innerHTML = '';
+				data.data.forEach(record => {
+					const row = `
+						<tr onclick="redirectToForm(this)">
+							<td>Edit</td>
+							<td>${record.created_at.split('T')[0]}</td>
+							<td>${record.id}</td>
+							<td>${record.phone_number}</td>
+							<td>${record.name.split(' ')[0]}</td> 
+							<td>${record.name.split(' ')[1]}</td>
+							<td>${record.birth_state}</td>
+							<td>${record.zip_code}</td>
+							<td>${record.age}</td>
+							<td>${record.account_type}</td>
+							<td>${record.insurance_company}</td>
+							<td>${record.coverage_amount}</td>
+						</tr>
+					`;
+					tableBody.insertAdjacentHTML('beforeend', row);
+				});
+			} catch (error) {
+				console.error('Error fetching data:', error);
+			}
+		}
+		document.addEventListener('DOMContentLoaded', fetchData);
+	</script>
 	<!-- endinject-->
 </body>
 </html>
