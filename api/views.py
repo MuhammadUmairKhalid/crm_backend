@@ -7,11 +7,11 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework import viewsets
 import json
-from api.permissions import IsAgent,IsValidator
+from api.permissions import IsAgent,IsValidator,IsSuperUser,IsAdmin,IsAdminOrSuperUser
 from dashboard.models import User
 from rest_framework import status
 from django.contrib.auth.hashers import check_password
-from .serializers import CompanySerializer, FormSerializer,ChangePasswordSerializer
+from .serializers import CompanySerializer, FormSerializer,ChangePasswordSerializer,UserSerializer
 from dashboard.models import Form,Company
 class Login(APIView):
     authentication_classes = [] 
@@ -40,7 +40,6 @@ class Login(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         token, _ = Token.objects.get_or_create(user=user)
-        print(user.username)
         return Response(
             {"status": "success", "token": str(token),"role":user.role,"name":user.username},
             status=status.HTTP_200_OK
@@ -49,11 +48,19 @@ class Login(APIView):
 class FormDataViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsAgent]
-    # queryset = Form.objects.all()
+    queryset = Form.objects.all()
     serializer_class = FormSerializer
 
     def get_queryset(self):
         return Form.objects.filter(agent=self.request.user)
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            "status": "success",
+            "data": serializer.data
+        })
 
     def create(self, request, *args, **kwargs):
         form_data = request.data['form']
@@ -103,7 +110,7 @@ class FormDataViewSet(viewsets.ModelViewSet):
 
 class validatorformViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsValidator]  # Assuming `IsValidator` is a custom permission class
+    permission_classes = [IsAuthenticated, IsValidator] 
     queryset = Form.objects.all()
     serializer_class = FormSerializer
 
@@ -122,9 +129,8 @@ class validatorformViewSet(viewsets.ModelViewSet):
             return Response(
                 {"status": "error", "message": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            )                                                                                                                                                                                                                                                                                               
         
-
 class ChangePasswordView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsValidator | IsAgent ]
@@ -137,3 +143,36 @@ class ChangePasswordView(APIView):
             user.save()
             return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'destroy']:
+            if self.request.user.role == 'superuser':
+                return [IsSuperUser()]
+            elif self.request.user.role == 'admin':
+                return [IsAdmin()]
+        return [IsAdminOrSuperUser()] 
+
+    def get_queryset(self):
+        if self.request.user.role == 'superuser':
+            return User.objects.all()
+        elif self.request.user.role == 'admin':
+            return User.objects.filter(is_deleted=False)
+        return User.objects.none()
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if self.request.user.role == 'admin':
+            # Admin can only soft-delete
+            instance.is_deleted = True
+            instance.save()
+        elif self.request.user.role == 'superuser':
+            # Superuser can hard-delete
+            instance.delete()
+

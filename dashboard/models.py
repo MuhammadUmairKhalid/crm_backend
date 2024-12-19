@@ -19,19 +19,7 @@ class underwriting_status(Enum):
     @classmethod
     def choices(cls):
         return [(key.name, key.value) for key in cls]
-
-# class InsuranceCompany(Enum):
-#     MUTUAL_OF_OMAHA = 'Mutual Of Omaha'
-#     AFLAC = 'Aflac'
-#     COREBRIDGE_FINANCIAL = 'Corebridge Financial'
-#     SBLI = 'SBLI'
-#     ROYAL_NEIGHBORS_OF_AMERICA = 'Royal Neighbors Of America'
-#     GTL = 'GTL'
-
-#     @classmethod
-#     def choices(cls):
-#         return [(company.value, company.value) for company in cls]
-    
+ 
 class InsuranceType(Enum):
     Level = 'Level'
     Standard = "Standard"
@@ -61,17 +49,6 @@ class AccountType(Enum):
         return [(account.name, account.value) for account in cls]
     
 
-# class ScheduleOption(Enum):
-#     FIRST_OF_MONTH = "1stofeachmonth"
-#     THIRD_OF_MONTH = "3rd of each month"
-#     SECOND_WEDNESDAY = "2nd Wednesday of each month"
-#     THIRD_WEDNESDAY = "3rd Wednesday of each month"
-#     FOURTH_WEDNESDAY = "4th Wednesday of each month"
-
-    @classmethod
-    def choices(cls):
-        return [(schedule.name, schedule.value) for schedule in cls]
-
 class User(AbstractUser):
     ROLE_CHOICES = [
         ('superuser', 'Super User'),
@@ -82,11 +59,11 @@ class User(AbstractUser):
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
-    def is_admin(self):
-        return self.role == 'admin'
+    # def is_admin(self):
+    #     return self.role == 'admin'
 
-    def is_custom_superuser(self):
-        return self.role == 'superuser'
+    # def is_custom_superuser(self):
+    #     return self.role == 'superuser'
 
 class Company(models.Model):
     name = models.CharField(max_length=255)

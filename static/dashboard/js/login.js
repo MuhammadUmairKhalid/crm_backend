@@ -19,7 +19,7 @@ function login(event) {
     .then(data => {
         if (data.status === "success") {
             localStorage.setItem("token", data.token);
-            localStorage.setItem("username", data.user_name);  // Store the username
+            localStorage.setItem("name", data.username);  // Store the username
             localStorage.setItem("role", data.role);            // Store the role
         
             if (data.role === "agent") {
