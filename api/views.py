@@ -11,7 +11,7 @@ from api.permissions import IsAgent,IsValidator
 from dashboard.models import User
 from rest_framework import status
 from django.contrib.auth.hashers import check_password
-from .serializers import CompanySerializer, FormSerializer
+from .serializers import CompanySerializer, FormSerializer,ChangePasswordSerializer
 from dashboard.models import Form,Company
 class Login(APIView):
     authentication_classes = [] 
@@ -118,3 +118,17 @@ class validatorformViewSet(viewsets.ModelViewSet):
                 {"status": "error", "message": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+
+class ChangePasswordView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsValidator | IsAgent ]
+
+    def post(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
