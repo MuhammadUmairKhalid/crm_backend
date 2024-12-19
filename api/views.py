@@ -29,6 +29,8 @@ class Login(APIView):
             )
         try:
             user = User.objects.get(username=user_name)
+            print(user.username)
+            print(user.password)
         except User.DoesNotExist:
             return Response(
                 {"status": "Invalid username or password"},
@@ -40,8 +42,9 @@ class Login(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         token, _ = Token.objects.get_or_create(user=user)
+        print("blajajjjj")
         return Response(
-            {"status": "success", "token": str(token),"role":user.role,"name":user.username},
+            {"status": "success", "token": str(token),"role":"superuser","name":user.username},
             status=status.HTTP_200_OK
         )
     
